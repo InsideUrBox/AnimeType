@@ -1,0 +1,2 @@
+# animetype
+anime typing game
