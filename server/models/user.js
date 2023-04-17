@@ -5,11 +5,23 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    username: {
+        type: String,
+        required: false
+    },
     racesCompleted: {
         type: Number,
         required: true
     },
     averageWPM: {
+        type: Number,
+        required: true
+    },
+    fastestWPM: {
+        type: Number,
+        required: true
+    },
+    averageAcc: {
         type: Number,
         required: true
     }

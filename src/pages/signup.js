@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth'
 import app from '../components/firebase'
 import '../index.css'
 
@@ -13,34 +13,35 @@ const SignUp = () => {
     const [password, setPassword] = useState('')
     const [showPass, setShowPass] = useState(false)
 
+    const [errorMessage, setErrorMessage] = useState('')
+    const [errorVisible, setErrorVisible] = useState(false)
+
     if (navigateHome) {
         return <Navigate to='/' />
     }
 
-    const attemptSignUp = () => {
-
-        if (email && password) {
-            createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
-                const user = userCredential.user
-                const requestOptions = {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ title: 'Post new user' })
-                }
-                fetch(`http://localhost:3001/user/${ user.uid }`).then((res) => {
-                    console.log(res)
-                }).catch(err => {
-                    console.log(err)
+    const attemptSignUp = async (event) => {
+        event.preventDefault()
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+            const user = userCredential.user    
+            const requestOptions = {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    uid: user.uid,
+                    username: username
                 })
-            }).catch((err) => {
-                const errorCode = err.code
-                const errorMessage = err.message
-                console.log(errorCode, errorMessage)
-            })
-        } else {
-            console.log('please enter password')
+            }
+            const response = await fetch('http://localhost:3001/user', requestOptions)
+            console.log(response)
+            setNavigateHome(true)
+            signOut(auth)
+
+        } catch (error) {
+            setErrorVisible(true)
+            setErrorMessage(error.message.slice(9, error.message.length))
         }
-        setNavigateHome(true)
     }
 
     return (
@@ -51,7 +52,7 @@ const SignUp = () => {
                 </h1>
                 <form onSubmit={attemptSignUp} className='flex flex-col space-y-6'>
                     <label>
-                        <input placeholder='Email' required='true' className='text-black w-2/3 p-2 rounded-sm' autoCorrect='false' onChange={(e) => {
+                        <input placeholder='Email' required={true} className='text-black w-2/3 p-2 rounded-sm' autoCorrect='false' onChange={(e) => {
                             setEmail(e.target.value)
                         }} value={email}></input>
                     </label>
@@ -61,7 +62,7 @@ const SignUp = () => {
                         }} value={username}></input>
                     </label>
                     <label>
-                        <input placeholder='Password' required='true' type={showPass ? 'text' : 'password'} onChange={(e) => {
+                        <input placeholder='Password' required={true} type={showPass ? 'text' : 'password'} onChange={(e) => {
                             setPassword(e.target.value)
                         }} className='text-black w-2/3 p-2 rounded-sm' value={password} autoCorrect='false'></input>
                     </label>
@@ -83,6 +84,14 @@ const SignUp = () => {
                         </button>
                     </div>
                 </div>
+            </div>
+            <div className={!errorVisible ? 'hidden' : ' -translate-y-3/4 translate-x-1/2 text-center rounded-lg p-4 bg-gray-200 absolute top-1/2 right-1/2 w-[250px]'}>
+                <p className=''>Error: {errorMessage}</p>
+                <button className='mt-2 p-2 rounded-lg text-white bg-gray-900 hover:opacity-80' onClick={() => {
+                    setErrorVisible(false)
+                }}>
+                    Try Again
+                </button>
             </div>
         </div>
     )

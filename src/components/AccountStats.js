@@ -1,40 +1,49 @@
-import React, { useState } from 'react'
-import { getAuth } from 'firebase/auth' 
-import app from './firebase'
+import React, { useEffect, useState } from 'react'
 import '../index.css'
 
-const auth = getAuth(app)
-const AccountStats = ({ username }) => {
+const AccountStats = ({ account }) => {
     
     const [stats, setStats] = useState({
-        "username" : username,
-        "totalGames" : 12313,
-        "averageSpeed" : 123,
-        "fastestSpeed" : 150
+        username : "",
+        totalGames : "",
+        averageSpeed : "",
+        fastestSpeed: "",
+        averageAccuracy: ""
+
     })
+
+    useEffect(() => {
+        if (account !== undefined) {
+            setStats({
+                username : account.username,
+                totalGames : account.racesCompleted,
+                averageSpeed : account.averageWPM, 
+                fastestSpeed: account.fastestWPM,
+                averageAccuracy: account.averageAcc
+            })
+        }
+    }, [account])
     
     return (
         <div className='mt-4'>
-            <ul className='bg-gray-100'>
-                <li className='py-4 border-4 border-white'>
+            <ul className='border-2'>
+                <li className='bg-gray-800 py-3 m-3 border-2 rounded-md'>
                     <h1>Passages Typed:</h1>
-                    <strong>{stats.totalGames}</strong>
+                    <strong>{ stats.totalGames }</strong>
                 </li>
-                <li className='py-4 border-4 border-white'>
+                <li className='bg-gray-800 py-3 m-3 border-2 rounded-md'>
                     <h1>Average Speed:</h1>
-                    <strong>{stats.averageSpeed}WPM</strong>
+                    <strong>{ stats.averageSpeed }WPM</strong>
                 </li>
-                <li className='py-4 border-4 border-white'>
+                <li className='bg-gray-800 py-3 m-3 border-2 rounded-md'>
                     <h1>Fastest Speed:</h1>
-                    <strong>{stats.fastestSpeed}WPM</strong>
+                    <strong>{ stats.fastestSpeed }WPM</strong>
+                </li>
+                <li className='bg-gray-800 py-3 m-3 border-2 rounded-md'>
+                    <h1>Average Accuracy:</h1>
+                    <strong>{ stats.averageAccuracy }%</strong>
                 </li>
             </ul>
-
-            <div className='text-2xl mt-3'>
-                <h2>
-                    {`keep up the good work, ${stats.username}!`}
-                </h2>
-            </div>
         </div>
     )
 }
