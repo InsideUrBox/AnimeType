@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/animetype/static/css/main.b8a8c884.css",
+    "main.js": "/animetype/static/js/main.76a6823b.js",
+    "index.html": "/animetype/index.html",
+    "main.b8a8c884.css.map": "/animetype/static/css/main.b8a8c884.css.map",
+    "main.76a6823b.js.map": "/animetype/static/js/main.76a6823b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b8a8c884.css",
+    "static/js/main.76a6823b.js"
+  ]
+}
